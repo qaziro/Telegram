@@ -359,6 +359,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     private RLottieDrawable cameraDrawable;
     private RLottieDrawable cellCameraDrawable;
+    private RLottieImageView dropletMorphView;
 
     private HintView fwdRestrictedHint;
     private FrameLayout avatarContainer;
@@ -703,14 +704,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private CharacterStyle loadingSpan;
 
     private ProfileActionBarView profileActionBarView;
-    private static final float HEADER_COLLAPSED_HEIGHT_DP = 220f; //88f;
-    private static final float AVATAR_COLLAPSED_SIZE_DP = 42f; //42f;
-    private static final float AVATAR_MIDDLE_STATE_SIZE_DP = 96f;
+    private static final float HEADER_COLLAPSED_HEIGHT_DP = 220f;
+    private static final float AVATAR_COLLAPSED_SIZE_DP = 23f;
+    private static final float AVATAR_MIDDLE_STATE_SIZE_DP = 104f;
     private static final float AVATAR_MAX_PULL_SIZE_DP =  1.5f * AVATAR_MIDDLE_STATE_SIZE_DP;
-    private static final float EXPAND_TRIGGER_PROGRESS = 0.33f; //0.33f
+    private static final float EXPAND_TRIGGER_PROGRESS = 0.33f;
     private static final float NAME_MIDDLE_SCALE = 0.32f;
-    private static final float AVATAR_COLLAPSED_POSITION_Y_DP = -30f - AVATAR_COLLAPSED_SIZE_DP;
-    private static final float AVATAR_MIDDLE_POSITION_Y_DP = 60f;
+    private static final float AVATAR_COLLAPSED_POSITION_Y_DP = -30f - 22f;
+    private static final float AVATAR_MIDDLE_POSITION_Y_DP = 74f;
     private static final float PADDING_FROM_AVATAR_MIDDLE_DP = 5f;
     private static final float PADDING_BETWEEN_LINES_MIDDLE_DP = 0f;
 
@@ -831,15 +832,77 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         private boolean hasStories;
         private float progressToInsets = 1f;
 
-        public void setAvatarsViewPager(ProfileGalleryView avatarsViewPager) {
-            this.avatarsViewPager = avatarsViewPager;
-        }
+        private float blurProgress = 1f;
+        private Bitmap blurredBitmap;
+        private Canvas blurredBitmapCanvas;
+        private final Paint blurPaint;
+        private final Path clipPath;
+        private final RectF clipRectF;
+        private final Paint blackPaint;
+
 
         public AvatarImageView(Context context) {
             super(context);
             foregroundImageReceiver = new ImageReceiver(this);
             placeholderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             placeholderPaint.setColor(Color.BLACK);
+            blurPaint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
+            clipPath = new Path();
+            clipRectF = new RectF();
+            blackPaint= new Paint();
+            blackPaint.setColor(Color.BLACK);
+        }
+
+        @Override
+        public void setImageBitmap(Bitmap bitmap) {
+            super.setImageBitmap(bitmap);
+            invalidateBlur();
+        }
+
+        private void invalidateBlur() {
+            if (blurredBitmap != null) {
+                blurredBitmap.recycle();
+                blurredBitmap = null;
+            }
+        }
+
+        public void setBlurProgress(float progress) {
+            if (this.blurProgress == progress) {
+                return;
+            }
+            this.blurProgress = progress;
+            invalidate();
+        }
+
+        private void checkAndGenerateBlur() {
+            Bitmap originalBitmap = imageReceiver.getBitmap();
+            if (originalBitmap == null || originalBitmap.isRecycled()) {
+                invalidateBlur();
+                return;
+            }
+
+            int smallWidth = Math.max(64, (int) (originalBitmap.getWidth() / 6.0f));
+            int smallHeight = Math.max(64, (int) (originalBitmap.getHeight() / 6.0f));
+
+            if (blurredBitmap == null || blurredBitmap.getWidth() != smallWidth || blurredBitmap.getHeight() != smallHeight) {
+                if (blurredBitmap != null) {
+                    blurredBitmap.recycle();
+                }
+                blurredBitmap = Bitmap.createBitmap(smallWidth, smallHeight, Bitmap.Config.ARGB_8888);
+                blurredBitmapCanvas = new Canvas(blurredBitmap);
+            }
+
+            blurredBitmapCanvas.save();
+            blurredBitmapCanvas.drawBitmap(originalBitmap, null, new RectF(0, 0, smallWidth, smallHeight), blurPaint);
+            blurredBitmapCanvas.restore();
+
+            float radiusProgress = 1.0f - blurProgress;
+            int blurRadius = (int) Math.max(1, 12 * radiusProgress);
+            Utilities.stackBlurBitmap(blurredBitmap, blurRadius);
+        }
+
+        public void setAvatarsViewPager(ProfileGalleryView avatarsViewPager) {
+            this.avatarsViewPager = avatarsViewPager;
         }
 
         public void setAnimateFromImageReceiver(ImageReceiver imageReceiver) {
@@ -904,9 +967,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             invalidate();
         }
 
+        @Override
         protected void onDetachedFromWindow() {
             super.onDetachedFromWindow();
             foregroundImageReceiver.onDetachedFromWindow();
+            invalidateBlur();
             if (drawableHolder != null) {
                 drawableHolder.release();
                 drawableHolder = null;
@@ -951,13 +1016,37 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
             }
             if (imageReceiver != null && alpha > 0 && (foregroundAlpha < 1f || !drawForeground)) {
-                imageReceiver.setImageCoords(inset, inset, getMeasuredWidth() - inset * 2f, getMeasuredHeight() - inset * 2f);
-                final float wasAlpha = imageReceiver.getAlpha();
-                imageReceiver.setAlpha(wasAlpha * alpha);
                 if (drawAvatar) {
+                    float finalAlpha = imageReceiver.getAlpha() * alpha;
+
+                    clipRectF.set(inset, inset, getMeasuredWidth() - inset * 2f, getMeasuredHeight() - inset * 2f);
+                    clipPath.rewind();
+                    float cornerRadius = imageReceiver.getRoundRadius()[0];
+                    clipPath.addRoundRect(clipRectF, cornerRadius, cornerRadius, Path.Direction.CW);
+
+                    canvas.save();
+                    canvas.clipPath(clipPath);
+
+                    imageReceiver.setImageCoords(inset, inset, getMeasuredWidth() - inset * 2f, getMeasuredHeight() - inset * 2f);
+                    imageReceiver.setAlpha(finalAlpha);
                     imageReceiver.draw(canvas);
+
+                    if (blurProgress > 0.0f && blurProgress < 1.0f) {
+                        checkAndGenerateBlur();
+                        if (blurredBitmap != null) {
+                            canvas.drawBitmap(blurredBitmap, null, clipRectF, blurPaint);
+                        }
+                    }
+
+                    if (blurProgress < 1.0f) {
+                        int blackAlpha = (int) ((1.0f - blurProgress) * 255);
+                        blackPaint.setAlpha(blackAlpha);
+                        canvas.drawRoundRect(clipRectF, cornerRadius, cornerRadius, blackPaint);
+                    }
+
+                    canvas.restore();
+                    imageReceiver.setAlpha(finalAlpha);
                 }
-                imageReceiver.setAlpha(wasAlpha);
             }
             if (foregroundAlpha > 0f && drawForeground && alpha > 0) {
                 if (foregroundImageReceiver.getDrawable() != null) {
@@ -4833,6 +4922,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         animatedStatusView.setPivotX(AndroidUtilities.dp(30));
         animatedStatusView.setPivotY(AndroidUtilities.dp(30));
 
+        dropletMorphView = new RLottieImageView(context);
+        dropletMorphView.setAnimation(R.raw.droplet_morph_anim, 60, 60);
+        dropletMorphView.stopAnimation();
+        frameLayout.addView(dropletMorphView, LayoutHelper.createFrame(104, 104, Gravity.TOP | Gravity.CENTER_HORIZONTAL));
+
         avatarContainer = new FrameLayout(context);
         avatarContainer2 = new FrameLayout(context) {
 
@@ -5702,10 +5796,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         float finalYOffset = (finalLayoutHeight * (avatarScale - 1)) / 2.0f;
         avatarContainer.setTranslationY(AndroidUtilities.lerp((float) Math.ceil(avatarY), finalYOffset, value));
 
-        final float cornersAnimationStartThreshold = 0.0f;
-        final float cornersAnimationEndThreshold = 0.5f;
-        float rawAnimationProgress = (value - cornersAnimationStartThreshold) / (cornersAnimationEndThreshold - cornersAnimationStartThreshold);
-        final float cornersAnimationProgress = MathUtils.clamp(rawAnimationProgress, 0.0f, 1.0f);
+        final float cornersAnimationProgress = getProgressWithinThresholds(value, 0.0f, 0.5f);
         avatarImage.setRoundRadius((int) AndroidUtilities.lerp(getSmallAvatarRoundRadius(), 0f, cornersAnimationProgress));
 
         if (storyView != null) {
@@ -7286,14 +7377,28 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         if (avatarContainer != null) {
             final float diff = Math.min(1f, extraHeight / AndroidUtilities.dp(HEADER_COLLAPSED_HEIGHT_DP));
-
-            final float textAnimationStartThreshold = 0.4f;
-            final float textAnimationEndThreshold = 1f;
-            float rawAnimationProgress = (diff - textAnimationStartThreshold) / (textAnimationEndThreshold - textAnimationStartThreshold);
-            final float textAnimationProgress = MathUtils.clamp(rawAnimationProgress, 0.0f, 1.0f);
+            final float textAnimationProgress = getProgressWithinThresholds(diff, 0.4f, 1f);
+            final float dropletAnimationMorphProgress = getProgressWithinThresholds(diff, 0.14f, 0.85f);
+            final float avatarBlurProgress = getProgressWithinThresholds(diff, 0.3f, 0.85f);
 
             listView.setTopGlowOffset((int) extraHeight);
             listView.setOverScrollMode(extraHeight > AndroidUtilities.dp(HEADER_COLLAPSED_HEIGHT_DP) && extraHeight < listView.getMeasuredWidth() - newTop ? View.OVER_SCROLL_NEVER : View.OVER_SCROLL_ALWAYS);
+
+            if (dropletMorphView != null) {
+                Drawable drawable = dropletMorphView.getDrawable();
+                if (drawable instanceof RLottieDrawable) {
+                    RLottieDrawable lottieDrawable = (RLottieDrawable) drawable;
+                    if (diff < 0.14 || diff > 0.85) {
+                        lottieDrawable.setProgress(0.0f);
+                    } else {
+                        lottieDrawable.setProgress(dropletAnimationMorphProgress);
+                    }
+                }
+            }
+
+            if (avatarImage != null) {
+                avatarImage.setBlurProgress(avatarBlurProgress);
+            }
 
             if (profileActionBarView != null) {
                 float headerBottom = newTop + extraHeight + searchTransitionOffset;
@@ -7703,6 +7808,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
 
         updateEmojiStatusEffectPosition();
+    }
+
+    private float getProgressWithinThresholds(float globalProgress, float startThreshold, float endThreshold) {
+        if (startThreshold >= endThreshold) {
+            return globalProgress >= endThreshold ? 1.0f : 0.0f;
+        }
+        float rawProgress = (globalProgress - startThreshold) / (endThreshold - startThreshold);
+        return MathUtils.clamp(rawProgress, 0.0f, 1.0f);
     }
 
     public void updateQrItemVisibility(boolean animated) {
