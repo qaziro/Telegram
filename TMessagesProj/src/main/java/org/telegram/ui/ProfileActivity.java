@@ -702,10 +702,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private ProfileActionBarView profileActionBarView;
     private static final float HEADER_COLLAPSED_HEIGHT_DP = 220f;
     private static final float AVATAR_COLLAPSED_SIZE_DP = 23f;
+    private static final float NAME_COLLAPSED_POSITION_X_DP = 50f;
+    private static final float NAME_COLLAPSED_POSITION_Y_DP = 25f;
+    private static final float ONLINE_COLLAPSED_POSITION_Y_DP = 26f;
+    private static final float NAME_EXPANDED_MARGIN_BOTTOM_DP = 118f;
+    private static final float ONLINE_EXPANDED_MARGIN_BOTTOM_DP = 98f;
     private static final float AVATAR_MIDDLE_STATE_SIZE_DP = 104f;
     private static final float AVATAR_MAX_PULL_SIZE_DP =  1.5f * AVATAR_MIDDLE_STATE_SIZE_DP;
     private static final float EXPAND_TRIGGER_PROGRESS = 0.33f;
-    private static final float NAME_MIDDLE_SCALE = 0.32f;
+    private static final float NAME_MIDDLE_SCALE = 1.32f;
+    private static final float NAME_EXPANDED_SCALE = 1.67f;
     private static final float AVATAR_COLLAPSED_POSITION_Y_DP = -30f - 22f;
     private static final float AVATAR_MIDDLE_POSITION_Y_DP = 74f;
     private static final float PADDING_FROM_AVATAR_MIDDLE_DP = 5f;
@@ -2980,8 +2986,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                         nameTextView[1].setTextColor(Color.WHITE);
                         nameTextView[1].setPivotY(nameTextView[1].getMeasuredHeight());
-                        nameTextView[1].setScaleX(1.67f);
-                        nameTextView[1].setScaleY(1.67f);
+                        nameTextView[1].setScaleX(NAME_EXPANDED_SCALE);
+                        nameTextView[1].setScaleY(NAME_EXPANDED_SCALE);
                         if (scamDrawable != null) {
                             scamDrawable.setColor(Color.argb(179, 255, 255, 255));
                         }
@@ -5798,14 +5804,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         final float k = AndroidUtilities.dpf2(8f);
 
         final float nameTextViewXEnd = AndroidUtilities.dpf2(18f) - nameTextView[1].getLeft();
-        final float nameTextViewYEnd = newTop + extraHeight - AndroidUtilities.dpf2(118f) - nameTextView[1].getBottom();
+        final float nameTextViewYEnd = newTop + extraHeight - AndroidUtilities.dpf2(NAME_EXPANDED_MARGIN_BOTTOM_DP) - nameTextView[1].getBottom();
         final float nameTextViewCx = k + nameX + (nameTextViewXEnd - nameX) / 2f;
         final float nameTextViewCy = k + nameY + (nameTextViewYEnd - nameY) / 2f;
         final float nameTextViewX = (1 - value) * (1 - value) * nameX + 2 * (1 - value) * value * nameTextViewCx + value * value * nameTextViewXEnd;
         final float nameTextViewY = (1 - value) * (1 - value) * nameY + 2 * (1 - value) * value * nameTextViewCy + value * value * nameTextViewYEnd;
 
         final float onlineTextViewXEnd = AndroidUtilities.dpf2(16f) - onlineTextView[1].getLeft();
-        final float onlineTextViewYEnd = newTop + extraHeight - AndroidUtilities.dpf2(98f) - onlineTextView[1].getBottom();
+        final float onlineTextViewYEnd = newTop + extraHeight - AndroidUtilities.dpf2(ONLINE_EXPANDED_MARGIN_BOTTOM_DP) - onlineTextView[1].getBottom();
         final float onlineTextViewCx = k + onlineX + (onlineTextViewXEnd - onlineX) / 2f;
         final float onlineTextViewCy = k + onlineY + (onlineTextViewYEnd - onlineY) / 2f;
         final float onlineTextViewX = (1 - value) * (1 - value) * onlineX + 2 * (1 - value) * value * onlineTextViewCx + value * value * onlineTextViewXEnd;
@@ -5829,8 +5835,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         onlineTextView[1].setTextColor(ColorUtils.blendARGB(applyPeerColor(statusColor, true, online), 0xB3FFFFFF, value));
         if (extraHeight > AndroidUtilities.dp(HEADER_COLLAPSED_HEIGHT_DP)) {
             nameTextView[1].setPivotY(AndroidUtilities.lerp(0, nameTextView[1].getMeasuredHeight(), value));
-            nameTextView[1].setScaleX(AndroidUtilities.lerp((1 + NAME_MIDDLE_SCALE), 1.67f, value));
-            nameTextView[1].setScaleY(AndroidUtilities.lerp((1 + NAME_MIDDLE_SCALE), 1.67f, value));
+            nameTextView[1].setScaleX(AndroidUtilities.lerp((NAME_MIDDLE_SCALE), NAME_EXPANDED_SCALE, value));
+            nameTextView[1].setScaleY(AndroidUtilities.lerp((NAME_MIDDLE_SCALE), NAME_EXPANDED_SCALE, value));
         }
         if (showStatusButton != null) {
             showStatusButton.setBackgroundColor(ColorUtils.blendARGB(Theme.multAlpha(Theme.adaptHSV(actionBarBackgroundColor, +0.18f, -0.1f), 0.5f), 0x23ffffff, currentExpandAnimatorValue));
@@ -7323,7 +7329,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         if (avatarContainer != null) {
             final float diff = Math.min(1f, extraHeight / AndroidUtilities.dp(HEADER_COLLAPSED_HEIGHT_DP));
-            final float textAnimationProgress = getProgressWithinThresholds(diff, 0.4f, 1f);
+            final float textAnimationProgress = getProgressWithinThresholds(diff, 0.38f, 1f);
             final float dropletAnimationMorphProgress = getProgressWithinThresholds(diff, 0.14f, 0.85f);
             final float avatarBlurProgress = getProgressWithinThresholds(diff, 0.3f, 0.85f);
 
@@ -7474,9 +7480,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                         onlineX = AndroidUtilities.dpf2(16f) - onlineTextView[1].getLeft();
                         nameTextView[1].setTranslationX(AndroidUtilities.dpf2(18f) - nameTextView[1].getLeft());
-                        nameTextView[1].setTranslationY(newTop + h - AndroidUtilities.dpf2(118f) - nameTextView[1].getBottom() + additionalTranslationY);
+                        nameTextView[1].setTranslationY(newTop + h - AndroidUtilities.dpf2(NAME_EXPANDED_MARGIN_BOTTOM_DP) - nameTextView[1].getBottom() + additionalTranslationY);
                         onlineTextView[1].setTranslationX(onlineX + customPhotoOffset);
-                        onlineTextView[1].setTranslationY(newTop + h - AndroidUtilities.dpf2(98f) - onlineTextView[1].getBottom() + additionalTranslationY);
+                        onlineTextView[1].setTranslationY(newTop + h - AndroidUtilities.dpf2(ONLINE_EXPANDED_MARGIN_BOTTOM_DP) - onlineTextView[1].getBottom() + additionalTranslationY);
                         mediaCounterTextView.setTranslationX(onlineTextView[1].getTranslationX());
                         mediaCounterTextView.setTranslationY(onlineTextView[1].getTranslationY());
                         updateCollectibleHint();
@@ -7561,8 +7567,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 nameTextView[0].setScaleY(1.0f);
 
                 nameTextView[1].setPivotY(nameTextView[1].getMeasuredHeight());
-                nameTextView[1].setScaleX(1.67f);
-                nameTextView[1].setScaleY(1.67f);
+                nameTextView[1].setScaleX(NAME_EXPANDED_SCALE);
+                nameTextView[1].setScaleY(NAME_EXPANDED_SCALE);
 
                 avatarScale = AndroidUtilities.lerp(1.0f, (AVATAR_MAX_PULL_SIZE_DP) / AVATAR_COLLAPSED_SIZE_DP, avatarAnimationProgress);
                 if (storyView != null) {
@@ -7619,7 +7625,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (giftsView != null) {
                     giftsView.invalidate();
                 }
-                float nameScale = 1.0f + NAME_MIDDLE_SCALE * textAnimationProgress;
+                float nameScale = AndroidUtilities.lerp(1.0f, NAME_MIDDLE_SCALE, textAnimationProgress);
                 if (expandAnimator == null || !expandAnimator.isRunning()) {
                     avatarContainer.setScaleX(avatarScale);
                     avatarContainer.setScaleY(avatarScale);
@@ -7636,10 +7642,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 float paddingFromAvatar = AndroidUtilities.dp(PADDING_FROM_AVATAR_MIDDLE_DP);
                 float paddingBetweenLinesMiddle = AndroidUtilities.dp(PADDING_BETWEEN_LINES_MIDDLE_DP);
 
-                float nameStartX = -nameTextView[1].getLeft() + AndroidUtilities.dp(50f);
-                float nameStartY = -nameTextView[1].getTop() + AndroidUtilities.dp(30f);
+                float nameStartX = -nameTextView[1].getLeft() + AndroidUtilities.dp(NAME_COLLAPSED_POSITION_X_DP);
+                float nameStartY = -nameTextView[1].getTop() + AndroidUtilities.dp(NAME_COLLAPSED_POSITION_Y_DP);
                 float onlineStartX = nameStartX;
-                float onlineStartY = nameStartY - onlineTextView[1].getTop() + nameTextView[1].getTop() + AndroidUtilities.dp(26f);
+                float onlineStartY = nameStartY - onlineTextView[1].getTop() + nameTextView[1].getTop() + AndroidUtilities.dp(ONLINE_COLLAPSED_POSITION_Y_DP);
 
                 float originalAvatarHeight = AndroidUtilities.dp(AVATAR_COLLAPSED_SIZE_DP);
 
@@ -7649,13 +7655,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
                 float nameEndY = finalAvatarBottom + paddingFromAvatar - nameTextView[1].getTop();
 
-                float endNameWidth = nameTextView[1].getPaint().measureText(nameTextView[1].getText().toString()) * (1.0f + NAME_MIDDLE_SCALE) + nameTextView[1].getSideDrawablesSize();
+                float endNameWidth = nameTextView[1].getPaint().measureText(nameTextView[1].getText().toString()) * (NAME_MIDDLE_SCALE) + nameTextView[1].getSideDrawablesSize();
                 float nameEndX = (listView.getMeasuredWidth() / 2f) - endNameWidth / 2f - nameTextView[1].getLeft();
 
                 float endOnlineWidth = onlineTextView[1].getPaint().measureText(onlineTextView[1].getText().toString()) + onlineTextView[1].getSideDrawablesSize();
                 float onlineEndX = (listView.getMeasuredWidth() / 2f) - endOnlineWidth / 2f - onlineTextView[1].getLeft();
 
-                float nameScaledHeight = nameTextView[1].getMeasuredHeight() * (1.0f + NAME_MIDDLE_SCALE);
+                float nameScaledHeight = nameTextView[1].getMeasuredHeight() * (NAME_MIDDLE_SCALE);
 
                 float finalNameBottom = nameEndY + nameTextView[1].getTop() + nameScaledHeight;
 
@@ -7791,7 +7797,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private void refreshNameAndOnlineXY() {
         nameTextView[1].setPivotY(0);
 
-        float nameWidth = nameTextView[1].getPaint().measureText(nameTextView[1].getText().toString()) * (1 + NAME_MIDDLE_SCALE) + nameTextView[1].getSideDrawablesSize();
+        float nameWidth = nameTextView[1].getPaint().measureText(nameTextView[1].getText().toString()) * (NAME_MIDDLE_SCALE) + nameTextView[1].getSideDrawablesSize();
         nameX = (listView.getMeasuredWidth() / 2f) - (nameWidth / 2f) - nameTextView[1].getLeft();
 
         float onlineWidth = onlineTextView[1].getPaint().measureText(onlineTextView[1].getText().toString()) + onlineTextView[1].getSideDrawablesSize();
@@ -7820,7 +7826,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private void needLayoutText(float diff) {
         FrameLayout.LayoutParams layoutParams;
         float scale = nameTextView[1].getScaleX();
-        float maxScale = extraHeight > AndroidUtilities.dp(HEADER_COLLAPSED_HEIGHT_DP) ? 1.67f : 1.12f;
+        float maxScale = extraHeight > AndroidUtilities.dp(HEADER_COLLAPSED_HEIGHT_DP) ? NAME_EXPANDED_SCALE : NAME_MIDDLE_SCALE;
 
         if (extraHeight > AndroidUtilities.dp(HEADER_COLLAPSED_HEIGHT_DP) && scale != maxScale) {
             return;
@@ -8679,10 +8685,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
                 if (playProfileAnimation != 2) {
                     int width = (int) Math.ceil(AndroidUtilities.displaySize.x - AndroidUtilities.dp(118 + 8) + 21 * AndroidUtilities.density);
-                    float width2 = nameTextView[1].getPaint().measureText(nameTextView[1].getText().toString()) * 1.12f + nameTextView[1].getSideDrawablesSize();
+                    float width2 = nameTextView[1].getPaint().measureText(nameTextView[1].getText().toString()) * NAME_MIDDLE_SCALE + nameTextView[1].getSideDrawablesSize();
                     FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) nameTextView[1].getLayoutParams();
                     if (width < width2) {
-                        layoutParams.width = (int) Math.ceil(width / 1.12f);
+                        layoutParams.width = (int) Math.ceil(width / NAME_MIDDLE_SCALE);
                     } else {
                         layoutParams.width = LayoutHelper.WRAP_CONTENT;
                     }
@@ -8691,7 +8697,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     initialAnimationExtraHeight = AndroidUtilities.dp(HEADER_COLLAPSED_HEIGHT_DP);
                 } else {
                     FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) nameTextView[1].getLayoutParams();
-                    layoutParams.width = (int) ((AndroidUtilities.displaySize.x - AndroidUtilities.dp(32)) / 1.67f);
+                    layoutParams.width = (int) ((AndroidUtilities.displaySize.x - AndroidUtilities.dp(32)) / NAME_EXPANDED_SCALE);
                     nameTextView[1].setLayoutParams(layoutParams);
                 }
                 fragmentView.setBackgroundColor(0);
