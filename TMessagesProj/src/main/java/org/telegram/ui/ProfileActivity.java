@@ -831,22 +831,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         private float blurProgress = 1f;
         private Bitmap blurredBitmap;
         private Canvas blurredBitmapCanvas;
-        private final Paint blurPaint;
-        private final Path clipPath;
-        private final RectF clipRectF;
-        private final Paint blackPaint;
-
+        private final Paint blurPaint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
+        private final Path clipPath = new Path();
+        private final RectF clipRectF = new RectF();
+        private final Paint layerPaint = new Paint();
 
         public AvatarImageView(Context context) {
             super(context);
             foregroundImageReceiver = new ImageReceiver(this);
             placeholderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             placeholderPaint.setColor(Color.BLACK);
-            blurPaint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
-            clipPath = new Path();
-            clipRectF = new RectF();
-            blackPaint= new Paint();
-            blackPaint.setColor(Color.BLACK);
         }
 
         @Override
@@ -1023,23 +1017,26 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     canvas.save();
                     canvas.clipPath(clipPath);
 
+                    if (blurProgress < 1.0f) {
+                        int blackAlpha = (int) ((1.0f - blurProgress) * 255);
+                        layerPaint.setColorFilter(new PorterDuffColorFilter(Color.argb(blackAlpha, 0, 0, 0), PorterDuff.Mode.SRC_ATOP));
+                    } else {
+                        layerPaint.setColorFilter(null);
+                    }
+
+                    canvas.saveLayer(clipRectF, layerPaint);
+
                     imageReceiver.setImageCoords(inset, inset, getMeasuredWidth() - inset * 2f, getMeasuredHeight() - inset * 2f);
                     imageReceiver.setAlpha(finalAlpha);
                     imageReceiver.draw(canvas);
 
-                    if (blurProgress > 0.0f && blurProgress < 1.0f) {
+                    if (blurProgress >= 0.0f && blurProgress < 1.0f) {
                         checkAndGenerateBlur();
                         if (blurredBitmap != null) {
                             canvas.drawBitmap(blurredBitmap, null, clipRectF, blurPaint);
                         }
                     }
-
-                    if (blurProgress < 1.0f) {
-                        int blackAlpha = (int) ((1.0f - blurProgress) * 255);
-                        blackPaint.setAlpha(blackAlpha);
-                        canvas.drawRoundRect(clipRectF, cornerRadius, cornerRadius, blackPaint);
-                    }
-
+                    canvas.restore();
                     canvas.restore();
                     imageReceiver.setAlpha(finalAlpha);
                 }
