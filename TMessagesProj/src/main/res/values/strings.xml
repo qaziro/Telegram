@@ -9483,4 +9483,24 @@
     <string name="MessageTodoList">Checklist</string>
     <string name="TodoCheck">Check</string>
     <string name="TodoUncheck">Uncheck</string>
+    <string name="ProfileActionMessage">Message</string>
+    <string name="ProfileActionMute">Mute</string>
+    <string name="ProfileActionUnmute">Unmute</string>
+    <string name="ProfileActionCall">Call</string>
+    <string name="ProfileActionVideo">Video</string>
+    <string name="ProfileActionJoin">Join</string>
+    <string name="ProfileActionShare">Share</string>
+    <string name="ProfileActionReport">Report</string>
+    <string name="ProfileActionLeave">Leave</string>
+    <string name="ProfileActionDiscuss">Discuss</string>
+    <string name="ProfileActionGift">Gift</string>
+    <string name="ProfileActionAddStory">Add Story</string>
+    <string name="ProfileActionLiveStream">Live Stream</string>
+    <string name="ProfileActionStop">Stop</string>
+    <string name="ProfileActionSetPhoto">Set Photo</string>
+    <string name="ProfileActionEdit">Edit Profile</string>
+    <string name="ProfileActionSetUsername">Set Username</string>
+    <string name="ProfileOpenApp">Open App</string>
+    <string name="ProfileActionVoiceChat">Voice Chat</string>
+    <string name="ProfileActionProfileColor">Profile Color</string>
 </resources>

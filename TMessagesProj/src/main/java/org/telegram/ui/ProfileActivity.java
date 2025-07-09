@@ -15109,17 +15109,18 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         public void configureForUser(TLRPC.User user, TLRPC.UserFull info) {
             showFourButtonLayout();
-            actionButtons[0].setData(R.drawable.ic_profile_action_message_filled, "Message"); // LocaleController.getString("Message", R.string.Message)
+            actionButtons[0].setData(R.drawable.ic_profile_action_message_filled, LocaleController.getString("ProfileActionMessage", R.string.ProfileActionMessage));
             actionButtons[0].setOnClickListener(v -> performPrimaryProfileAction());
 
             boolean muted = getMessagesController().isDialogMuted(user.id, 0);
-            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muted ? "Unmute" : "Mute"); // muted ? LocaleController.getString("Unmute", R.string.Unmute) : LocaleController.getString("Mute", R.string.Mute)
+            String muteText = muted ? LocaleController.getString("ProfileActionUnmute", R.string.ProfileActionUnmute) : LocaleController.getString("ProfileActionMute", R.string.ProfileActionMute);
+            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muteText);
             actionButtons[1].setOnClickListener(v -> showMuteMenu(v));
 
-            actionButtons[2].setData(R.drawable.ic_profile_action_call_filled, "Call"); // LocaleController.getString("Call", R.string.Call)
+            actionButtons[2].setData(R.drawable.ic_profile_action_call_filled, LocaleController.getString("ProfileActionCall", R.string.ProfileActionCall));
             actionButtons[2].setOnClickListener(v -> VoIPHelper.startCall(user, false, info != null && info.video_calls_available, getParentActivity(), info, getAccountInstance()));
 
-            actionButtons[3].setData(R.drawable.ic_profile_action_video_filled, "Video"); // LocaleController.getString("Video", R.string.Video)
+            actionButtons[3].setData(R.drawable.ic_profile_action_video_filled, LocaleController.getString("ProfileActionVideo", R.string.ProfileActionVideo));
             actionButtons[3].setOnClickListener(v -> VoIPHelper.startCall(user, true, info != null && info.video_calls_available, getParentActivity(), info, getAccountInstance()));
 
             boolean callsAvailable = info != null && info.phone_calls_available;
@@ -15132,13 +15133,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         public void configureForSelfProfile(TLRPC.User user) {
             showFourButtonLayout();
 
-            actionButtons[0].setData(R.drawable.ic_profile_action_camera_filled, "Set Photo"); // LocaleController.getString("SetPhoto", R.string.SetPhoto)
+            actionButtons[0].setData(R.drawable.ic_profile_action_camera_filled, LocaleController.getString("ProfileActionSetPhoto", R.string.ProfileActionSetPhoto));
             actionButtons[0].setOnClickListener(v -> performPrimaryProfileAction());
 
-            actionButtons[1].setData(R.drawable.group_edit_profile, "Edit Profile"); // LocaleController.getString("EditProfile", R.string.EditProfile)
+            actionButtons[1].setData(R.drawable.group_edit_profile, LocaleController.getString("ProfileActionEdit", R.string.ProfileActionEdit));
             actionButtons[1].setOnClickListener(v -> presentFragment(new UserInfoActivity()));
 
-            actionButtons[2].setData(R.drawable.menu_profile_colors, "Profile Color"); // LocaleController.getString("ProfileColor", R.string.ProfileColor)
+            actionButtons[2].setData(R.drawable.menu_profile_colors, LocaleController.getString("ProfileActionProfileColor", R.string.ProfileActionProfileColor));
             actionButtons[2].setOnClickListener(v -> {
                 if (!getUserConfig().isPremium()) {
                     showDialog(new PremiumFeatureBottomSheet(ProfileActivity.this, PremiumPreviewFragment.PREMIUM_FEATURE_NAME_COLOR, true));
@@ -15149,7 +15150,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             String username = UserObject.getPublicUsername(user);
             if (username != null) {
-                actionButtons[3].setData(R.drawable.ic_profile_action_share_filled, "Share"); // LocaleController.getString("Share", R.string.Share)
+                actionButtons[3].setData(R.drawable.ic_profile_action_share_filled, LocaleController.getString("ProfileActionShare", R.string.ProfileActionShare));
                 actionButtons[3].setOnClickListener(v -> {
                     try {
                         String link = "https://" + getMessagesController().linkPrefix + "/" + username;
@@ -15162,7 +15163,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 });
             } else {
-                actionButtons[3].setData(R.drawable.menu_username_set, "Set Username"); // LocaleController.getString("SetUsername", R.string.SetUsername)
+                actionButtons[3].setData(R.drawable.menu_username_set, LocaleController.getString("ProfileActionSetUsername", R.string.ProfileActionSetUsername));
                 actionButtons[3].setOnClickListener(v -> presentFragment(new ChangeUsernameActivity()));
             }
 
@@ -15174,7 +15175,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         public void configureForChannelNotJoined(TLRPC.Chat chat) {
             showFourButtonLayout();
-            actionButtons[0].setData(R.drawable.ic_profile_action_join_filled, "Join"); // LocaleController.getString("Join", R.string.Join)
+            actionButtons[0].setData(R.drawable.ic_profile_action_join_filled, LocaleController.getString("ProfileActionJoin", R.string.ProfileActionJoin));
             actionButtons[0].setOnClickListener(v -> {
                 getMessagesController().addUserToChat(currentChat.id, getUserConfig().getCurrentUser(), 0, null, ProfileActivity.this, true, () -> {
                     updateRowsIds();
@@ -15202,13 +15203,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             });
 
             boolean muted = getMessagesController().isDialogMuted(-chat.id, 0);
-            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muted ? "Unmute" : "Mute"); // muted ? LocaleController.getString("Unmute", R.string.Unmute) : LocaleController.getString("Mute", R.string.Mute)
+            String muteText = muted ? LocaleController.getString("ProfileActionUnmute", R.string.ProfileActionUnmute) : LocaleController.getString("ProfileActionMute", R.string.ProfileActionMute);
+            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muteText);
             actionButtons[1].setOnClickListener(v -> showMuteMenu(v));
 
-            actionButtons[2].setData(R.drawable.ic_profile_action_share_filled, "Share"); // LocaleController.getString("Share", R.string.Share)
+            actionButtons[2].setData(R.drawable.ic_profile_action_share_filled, LocaleController.getString("ProfileActionShare", R.string.ProfileActionShare));
             actionButtons[2].setOnClickListener(v -> actionBar.getActionBarMenuOnItemClick().onItemClick(share));
 
-            actionButtons[3].setData(R.drawable.ic_profile_action_report_filled, "Report"); // LocaleController.getString("Report", R.string.Report)
+            actionButtons[3].setData(R.drawable.ic_profile_action_report_filled, LocaleController.getString("ProfileActionReport", R.string.ProfileActionReport));
             actionButtons[3].setOnClickListener(v -> ReportBottomSheet.openChat(ProfileActivity.this, getDialogId()));
 
             actionButtons[0].setVisibility(View.VISIBLE);
@@ -15220,21 +15222,22 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         public void configureForChannelJoined(TLRPC.Chat chat, TLRPC.ChatFull info) {
             showFourButtonLayout();
             if (info != null && info.linked_chat_id != 0) {
-                actionButtons[0].setData(R.drawable.ic_profile_action_message_filled, "Discuss"); // LocaleController.getString("Discuss", R.string.Discuss)
+                actionButtons[0].setData(R.drawable.ic_profile_action_message_filled, LocaleController.getString("ProfileActionDiscuss", R.string.ProfileActionDiscuss));
                 actionButtons[0].setOnClickListener(v -> openDiscussion());
             } else {
-                actionButtons[0].setData(R.drawable.ic_profile_action_gift_filled, "Gift"); // LocaleController.getString("Gift", R.string.Gift)
+                actionButtons[0].setData(R.drawable.ic_profile_action_gift_filled, LocaleController.getString("ProfileActionGift", R.string.ProfileActionGift));
                 actionButtons[0].setOnClickListener(v -> actionBar.getActionBarMenuOnItemClick().onItemClick(gift_premium));
             }
 
             boolean muted = getMessagesController().isDialogMuted(-chat.id, topicId);
-            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muted ? "Unmute" : "Mute"); // muted ? LocaleController.getString("Unmute", R.string.Unmute) : LocaleController.getString("Mute", R.string.Mute)
+            String muteText = muted ? LocaleController.getString("ProfileActionUnmute", R.string.ProfileActionUnmute) : LocaleController.getString("ProfileActionMute", R.string.ProfileActionMute);
+            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muteText);
             actionButtons[1].setOnClickListener(v -> showMuteMenu(v));
 
-            actionButtons[2].setData(R.drawable.ic_profile_action_share_filled, "Share"); // LocaleController.getString("Share", R.string.Share)
+            actionButtons[2].setData(R.drawable.ic_profile_action_share_filled, LocaleController.getString("ProfileActionShare", R.string.ProfileActionShare));
             actionButtons[2].setOnClickListener(v -> actionBar.getActionBarMenuOnItemClick().onItemClick(share));
 
-            actionButtons[3].setData(R.drawable.ic_profile_action_leave, "Leave"); // LocaleController.getString("Leave", R.string.Leave)
+            actionButtons[3].setData(R.drawable.ic_profile_action_leave, LocaleController.getString("ProfileActionLeave", R.string.ProfileActionLeave));
             actionButtons[3].setOnClickListener(v -> leaveChatPressed());
 
             actionButtons[0].setVisibility(View.VISIBLE);
@@ -15246,11 +15249,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         public void configureForTopic(TLRPC.Chat chat) {
             showFourButtonLayout();
 
-            actionButtons[0].setData(R.drawable.ic_profile_action_message_filled, "Message"); // LocaleController.getString("Message", R.string.Message)
+            actionButtons[0].setData(R.drawable.ic_profile_action_message_filled, LocaleController.getString("ProfileActionMessage", R.string.ProfileActionMessage));
             actionButtons[0].setOnClickListener(v -> performPrimaryProfileAction());
 
             boolean muted = getMessagesController().isDialogMuted(-chat.id, getTopicId());
-            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muted ? LocaleController.getString("Unmute", R.string.Unmute) : LocaleController.getString("Mute", R.string.Mute));
+            String muteText = muted ? LocaleController.getString("ProfileActionUnmute", R.string.ProfileActionUnmute) : LocaleController.getString("ProfileActionMute", R.string.ProfileActionMute);
+            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muteText);
             actionButtons[1].setOnClickListener(v -> showMuteMenu(v));
 
             actionButtons[0].setVisibility(View.VISIBLE);
@@ -15262,18 +15266,19 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         public void configureForGroup(TLRPC.Chat chat, TLRPC.ChatFull info) {
             showFourButtonLayout();
 
-            actionButtons[0].setData(R.drawable.ic_profile_action_message_filled, "Message"); // LocaleController.getString("Message", R.string.Message)
+            actionButtons[0].setData(R.drawable.ic_profile_action_message_filled, LocaleController.getString("ProfileActionMessage", R.string.ProfileActionMessage));
             actionButtons[0].setOnClickListener(v -> performPrimaryProfileAction());
 
             boolean muted = getMessagesController().isDialogMuted(-chat.id, 0);
-            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muted ? LocaleController.getString("Unmute", R.string.Unmute) : LocaleController.getString("Mute", R.string.Mute));
+            String muteText = muted ? LocaleController.getString("ProfileActionUnmute", R.string.ProfileActionUnmute) : LocaleController.getString("ProfileActionMute", R.string.ProfileActionMute);
+            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muteText);
             actionButtons[1].setOnClickListener(v -> showMuteMenu(v));
 
-            actionButtons[2].setData(R.drawable.ic_profile_action_live_stream, "Voice Chat"); //LocaleController.getString("VoiceChat", R.string.VoiceChat)
+            actionButtons[2].setData(R.drawable.ic_profile_action_live_stream, LocaleController.getString("ProfileActionVoiceChat", R.string.ProfileActionVoiceChat));
             actionButtons[2].setOnClickListener(v -> actionBar.getActionBarMenuOnItemClick().onItemClick(call_item));
             actionButtons[2].setVisibility(info != null && ChatObject.canManageCalls(chat) ? View.VISIBLE : View.GONE);
 
-            actionButtons[3].setData(R.drawable.ic_profile_action_leave, "Leave"); // LocaleController.getString("Leave", R.string.Leave)
+            actionButtons[3].setData(R.drawable.ic_profile_action_leave, LocaleController.getString("ProfileActionLeave", R.string.ProfileActionLeave));
             actionButtons[3].setOnClickListener(v -> leaveChatPressed());
 
             actionButtons[0].setVisibility(View.VISIBLE);
@@ -15283,14 +15288,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         public void configureForChannelAdmin(TLRPC.Chat chat, TLRPC.ChatFull info) {
             showFourButtonLayout();
-            actionButtons[0].setData(R.drawable.ic_profile_action_story, "Add Story"); // LocaleController.getString("AddStory", R.string.AddStory)
+            actionButtons[0].setData(R.drawable.ic_profile_action_story, LocaleController.getString("ProfileActionAddStory", R.string.ProfileActionAddStory));
             actionButtons[0].setOnClickListener(v -> sharedMediaLayout.openStoryRecorder());
 
             boolean muted = getMessagesController().isDialogMuted(-chat.id, topicId);
-            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muted ? "Unmute" : "Mute"); // muted ? LocaleController.getString("Unmute", R.string.Unmute) : LocaleController.getString("Mute", R.string.Mute)
+            String muteText = muted ? LocaleController.getString("ProfileActionUnmute", R.string.ProfileActionUnmute) : LocaleController.getString("ProfileActionMute", R.string.ProfileActionMute);
+            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muteText);
             actionButtons[1].setOnClickListener(v -> showMuteMenu(v));
 
-            actionButtons[2].setData(R.drawable.ic_profile_action_live_stream, "Live"); // LocaleController.getString("LiveStream", R.string.LiveStream)
+            actionButtons[2].setData(R.drawable.ic_profile_action_live_stream, LocaleController.getString("ProfileActionLiveStream", R.string.ProfileActionLiveStream));
             actionButtons[2].setOnClickListener(v -> actionBar.getActionBarMenuOnItemClick().onItemClick(call_item));
 
             actionButtons[0].setVisibility(View.VISIBLE);
@@ -15301,23 +15307,24 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         public void configureForBotWithApp(TLRPC.User bot) {
             showOpenAppLayout();
-            openAppButton.setText("Open App", false); // LocaleController.getString("ProfileBotOpenApp", R.string.ProfileBotOpenApp)
+            openAppButton.setText(LocaleController.getString("ProfileOpenApp", R.string.ProfileOpenApp), false);
             openAppButton.setOnClickListener(v -> getMessagesController().openApp(ProfileActivity.this, bot, null, classGuid, null));
         }
 
         public void configureForBot(TLRPC.User bot) {
             showFourButtonLayout();
-            actionButtons[0].setData(R.drawable.ic_profile_action_message_filled, "Message"); // LocaleController.getString("Message", R.string.Message)
+            actionButtons[0].setData(R.drawable.ic_profile_action_message_filled, LocaleController.getString("ProfileActionMessage", R.string.ProfileActionMessage));
             actionButtons[0].setOnClickListener(v -> performPrimaryProfileAction());
 
             boolean muted = getMessagesController().isDialogMuted(bot.id, 0);
-            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muted ? "Unmute" : "Mute"); // muted ? LocaleController.getString("Unmute", R.string.Unmute) : LocaleController.getString("Mute", R.string.Mute)
+            String muteText = muted ? LocaleController.getString("ProfileActionUnmute", R.string.ProfileActionUnmute) : LocaleController.getString("ProfileActionMute", R.string.ProfileActionMute);
+            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muteText);
             actionButtons[1].setOnClickListener(v -> showMuteMenu(v));
 
-            actionButtons[2].setData(R.drawable.ic_profile_action_share_filled, "Share"); // LocaleController.getString("Share", R.string.Share)
+            actionButtons[2].setData(R.drawable.ic_profile_action_share_filled, LocaleController.getString("ProfileActionShare", R.string.ProfileActionShare));
             actionButtons[2].setOnClickListener(v -> actionBar.getActionBarMenuOnItemClick().onItemClick(share));
 
-            actionButtons[3].setData(R.drawable.ic_profile_action_block_filled, "Stop"); // LocaleController.getString("Stop", R.string.Stop)
+            actionButtons[3].setData(R.drawable.ic_profile_action_block_filled, LocaleController.getString("ProfileActionStop", R.string.ProfileActionStop));
             actionButtons[3].setOnClickListener(v -> actionBar.getActionBarMenuOnItemClick().onItemClick(block_contact));
 
             actionButtons[0].setVisibility(View.VISIBLE);
