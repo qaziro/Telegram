@@ -15306,9 +15306,25 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
 
         public void configureForBotWithApp(TLRPC.User bot) {
-            showOpenAppLayout();
-            openAppButton.setText(LocaleController.getString("ProfileOpenApp", R.string.ProfileOpenApp), false);
-            openAppButton.setOnClickListener(v -> getMessagesController().openApp(ProfileActivity.this, bot, null, classGuid, null));
+            showFourButtonLayout();
+            actionButtons[0].setData(R.drawable.ic_profile_action_message_filled, LocaleController.getString("ProfileActionMessage", R.string.ProfileActionMessage));
+            actionButtons[0].setOnClickListener(v -> performPrimaryProfileAction());
+
+            boolean muted = getMessagesController().isDialogMuted(bot.id, 0);
+            String muteText = muted ? LocaleController.getString("ProfileActionUnmute", R.string.ProfileActionUnmute) : LocaleController.getString("ProfileActionMute", R.string.ProfileActionMute);
+            actionButtons[1].setData(muted ? R.drawable.ic_profile_action_unmute_filled : R.drawable.ic_profile_action_mute_filled, muteText);
+            actionButtons[1].setOnClickListener(v -> showMuteMenu(v));
+
+            actionButtons[2].setData(R.drawable.ic_profile_action_share_filled, LocaleController.getString("ProfileActionShare", R.string.ProfileActionShare));
+            actionButtons[2].setOnClickListener(v -> actionBar.getActionBarMenuOnItemClick().onItemClick(share));
+
+            actionButtons[3].setData(R.drawable.ic_profile_action_block_filled, LocaleController.getString("ProfileActionStop", R.string.ProfileActionStop));
+            actionButtons[3].setOnClickListener(v -> actionBar.getActionBarMenuOnItemClick().onItemClick(block_contact));
+
+            actionButtons[0].setVisibility(View.VISIBLE);
+            actionButtons[1].setVisibility(View.VISIBLE);
+            actionButtons[2].setVisibility(View.VISIBLE);
+            actionButtons[3].setVisibility(View.VISIBLE);
         }
 
         public void configureForBot(TLRPC.User bot) {
