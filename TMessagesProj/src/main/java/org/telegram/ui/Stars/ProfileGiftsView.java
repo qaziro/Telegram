@@ -59,29 +59,29 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
             new GiftAnimationProperties(40f, 290f,  0.3f, 1.0f, 0f, 0f,    0.5f, 0.95f, false, 1.0f, 1.0f)
     };
 
-    private static final float START_PATTERN_ALFA_MULTIPLIER = 1.5f;
-    private static final float END_PATTERN_ALFA_MULTIPLIER = 1.3f;
+    private static final float START_PATTERN_ALFA_MULTIPLIER = 1.1f;
+    private static final float END_PATTERN_ALFA_MULTIPLIER = 1.4f;
     private static final GiftAnimationProperties[] STAR_ANIMATION_PATTERN = new GiftAnimationProperties[]{
-            new GiftAnimationProperties(15f, 0.0f, 0.3f, 1.13f, 0f, 0f, 0.503f, 0.934f, false, 0.1f * START_PATTERN_ALFA_MULTIPLIER, 0.3f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(25f, 65f, 0.3f, 1.10f, 0f, 0f, 0.534f, 0.943f, false,  0.15f * START_PATTERN_ALFA_MULTIPLIER, 0.25f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(45f, 90f, 0.3f, 1.13f, 0f, 0f, 0.465f, 0.803f, false, 0.12f * START_PATTERN_ALFA_MULTIPLIER,0.22f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(28f, 120f, 0.3f, 1.107f, 0f, 0f, 0.592f, 0.985f, false, 0.07f * START_PATTERN_ALFA_MULTIPLIER, 0.17f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(18f, 180f, 0.3f, 1.13f, 0f, 0f, 0.523f, 0.936f, false, 0.02f * START_PATTERN_ALFA_MULTIPLIER, 0.12f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(28f, 240f, 0.3f, 1.107f, 0f, 0f, 0.554f, 0.943f, false, 0.07f * START_PATTERN_ALFA_MULTIPLIER, 0.17f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(45f, 270f, 0.3f, 1.13f, 0f, 0f, 0.466f, 0.804f, false, 0.12f * START_PATTERN_ALFA_MULTIPLIER, 0.22f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(25f, 295f, 0.3f, 1.10f, 0f, 0f, 0.513f, 0.937f, false, 0.25f * START_PATTERN_ALFA_MULTIPLIER, 0.25f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(15f, 0.0f, 0.47f, 1.13f, 0f, 0f, 0.453f, 0.870f, false, 0.0001f * START_PATTERN_ALFA_MULTIPLIER, 0.32f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(25f, 65f, 0.434f, 1.10f, 0f, 0f, 0.434f, 0.943f, false,  0.015f * START_PATTERN_ALFA_MULTIPLIER, 0.27f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(45f, 90f, 0.43f, 1.13f, 0f, 0f, 0.465f, 0.703f, false, 0.012f * START_PATTERN_ALFA_MULTIPLIER,0.24f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(28f, 120f, 0.433f, 1.107f, 0f, 0f, 0.592f, 0.945f, false, 0.07f * START_PATTERN_ALFA_MULTIPLIER, 0.19f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(18f, 180f, 0.41f, 1.13f, 0f, 0f, 0.523f, 0.936f, false, 0.02f * START_PATTERN_ALFA_MULTIPLIER, 0.14f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(28f, 240f, 0.47f, 1.107f, 0f, 0f, 0.554f, 0.943f, false, 0.07f * START_PATTERN_ALFA_MULTIPLIER, 0.19f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(45f, 270f, 0.48f, 1.13f, 0f, 0f, 0.466f, 0.704f, false, 0.012f * START_PATTERN_ALFA_MULTIPLIER, 0.24f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(25f, 295f, 0.434f, 1.10f, 0f, 0f, 0.413f, 0.937f, false, 0.015f * START_PATTERN_ALFA_MULTIPLIER, 0.27f * END_PATTERN_ALFA_MULTIPLIER),
 
-            new GiftAnimationProperties(37f, 35f, 0.3f, 0.92f, 0f, 0f, 0.445f, 0.846f, false, 0.047f * START_PATTERN_ALFA_MULTIPLIER, 0.147f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(65f, 65f, 0.3f, 0.95f, 0f, 0f, 0.376f, 0.937f, false, 0.023f * START_PATTERN_ALFA_MULTIPLIER, 0.123f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(95f, 90f, 0.3f, 0.98f, 0f, 0f, 0.283f, 0.706f, false, 0.013f * START_PATTERN_ALFA_MULTIPLIER, 0.113f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(67f, 120f, 0.3f, 1.10f, 0f, 0f, 0.534f, 0.946f, false, 0.05952f * START_PATTERN_ALFA_MULTIPLIER, 0.0952f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(61f, 150f, 0.3f, 1.17f, 0f, 0f, 0.165f, 0.762f, false, 0.05914f * START_PATTERN_ALFA_MULTIPLIER, 0.0914f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(37f, 35f, 0.5436f, 0.92f, 0f, 0f, 0.3355f, 0.706f, false, 0.047f * START_PATTERN_ALFA_MULTIPLIER, 0.147f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(65f, 65f, 0.541f, 0.95f, 0f, 0f, 0.4053f, 0.857f, false, 0.023f * START_PATTERN_ALFA_MULTIPLIER, 0.143f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(95f, 90f, 0.543f, 0.98f, 0f, 0f, 0.183f, 0.6206f, false, 0.013f * START_PATTERN_ALFA_MULTIPLIER, 0.133f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(67f, 120f, 0.545f, 1.10f, 0f, 0f, 0.404f, 0.896f, false, 0.0595f * START_PATTERN_ALFA_MULTIPLIER, 0.1152f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(61f, 150f, 0.542f, 1.17f, 0f, 0f, 0.165f, 0.672f, false, 0.0591f * START_PATTERN_ALFA_MULTIPLIER, 0.1114f * END_PATTERN_ALFA_MULTIPLIER),
 
-            new GiftAnimationProperties(61f, 210f, 0.3f, 1.17f, 0f, 0f, 0.184f, 0.793f, false, 0.05914f * START_PATTERN_ALFA_MULTIPLIER, 0.0914f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(67f, 240f, 0.3f, 1.10f, 0f, 0f, 0.526f, 0.923f, false, 0.05952f * START_PATTERN_ALFA_MULTIPLIER, 0.0952f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(95f, 270f, 0.3f, 0.98f, 0f, 0f, 0.293f, 0.703f, false, 0.0113f * START_PATTERN_ALFA_MULTIPLIER, 0.113f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(65f, 295f, 0.3f, 0.95f, 0f, 0f, 0.184f, 0.915f, false, 0.0123f * START_PATTERN_ALFA_MULTIPLIER, 0.123f * END_PATTERN_ALFA_MULTIPLIER),
-            new GiftAnimationProperties(37f, 325f, 0.3f, 0.93f, 0f, 0f, 0.313f, 0.844f, false, 0.0147f * START_PATTERN_ALFA_MULTIPLIER, 0.147f * END_PATTERN_ALFA_MULTIPLIER)
+            new GiftAnimationProperties(61f, 210f, 0.51f, 1.17f, 0f, 0f, 0.184f, 0.663f, false, 0.0591f * START_PATTERN_ALFA_MULTIPLIER, 0.1114f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(67f, 240f, 0.543f, 1.10f, 0f, 0f, 0.406f, 0.8903f, false, 0.0595f * START_PATTERN_ALFA_MULTIPLIER, 0.1152f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(95f, 270f, 0.542f, 0.98f, 0f, 0f, 0.193f, 0.623f, false, 0.0113f * START_PATTERN_ALFA_MULTIPLIER, 0.133f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(65f, 295f, 0.54f, 0.95f, 0f, 0f, 0.4052f, 0.857f, false, 0.0123f * START_PATTERN_ALFA_MULTIPLIER, 0.143f * END_PATTERN_ALFA_MULTIPLIER),
+            new GiftAnimationProperties(37f, 325f, 0.533f, 0.93f, 0f, 0f, 0.335f, 0.704f, false, 0.0147f * START_PATTERN_ALFA_MULTIPLIER, 0.167f * END_PATTERN_ALFA_MULTIPLIER)
     };
 
     public ProfileGiftsView(Context context, int currentAccount, long dialogId, @NonNull View avatarContainer, ProfileActivity.AvatarImageView avatarImage, Theme.ResourcesProvider resourcesProvider, int drawMode, @Nullable Drawable patternDrawable) {
@@ -409,7 +409,7 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
                 final float finalAlpha = baseAlpha * actionBarFadeMultiplier * currentAlpha;
                 if (finalAlpha <= 0) continue;
 
-                final float scale = lerp(props.startScale, props.endScale, scrollProgress);
+                final float scale = lerp(props.startScale, props.endScale, individualScrollProgress);
                 final float distance = endAvatarRadius + dp(props.distanceDp);
                 float[] endPos = calculatePosition(acx, avatarMiddleY, distance, props.angle);
                 float endX = endPos[0];
@@ -453,7 +453,7 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
                 }
                 if (finalAlpha <= 0) continue;
 
-                final float scale = lerp(props.startScale, props.endScale, scrollProgress);
+                final float scale = lerp(props.startScale, props.endScale, individualScrollProgress);
                 final float distance = endAvatarRadius + dp(props.distanceDp);
                 float[] endPos = calculatePosition(acx, avatarMiddleY, distance, props.angle);
                 float endX = endPos[0];
