@@ -1030,7 +1030,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         layerPaint.setColorFilter(null);
                     }
 
-                    canvas.saveLayer(clipRectF, layerPaint);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        canvas.saveLayer(clipRectF, layerPaint);
+                    }
 
                     imageReceiver.setImageCoords(inset, inset, getMeasuredWidth() - inset * 2f, getMeasuredHeight() - inset * 2f);
                     imageReceiver.setAlpha(finalAlpha);
@@ -4937,6 +4939,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         dropletMorphView = new RLottieImageView(context);
         dropletMorphView.setAnimation(R.raw.droplet_morph_anim, 60, 60);
         dropletMorphView.stopAnimation();
+        dropletMorphView.setProgress(0f);
         frameLayout.addView(dropletMorphView, LayoutHelper.createFrame(104, 104, Gravity.TOP | Gravity.CENTER_HORIZONTAL));
 
         avatarContainer = new FrameLayout(context);
