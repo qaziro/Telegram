@@ -1718,6 +1718,21 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         @Override
         protected void drawList(Canvas blurCanvas, boolean top, ArrayList<IViewWithInvalidateCallback> views) {
             super.drawList(blurCanvas, top, views);
+            if (avatarContainer2 != null && avatarContainer2.getVisibility() == VISIBLE) {
+                blurCanvas.save();
+                blurCanvas.translate(avatarContainer2.getLeft(), avatarContainer2.getTop());
+                avatarContainer2.draw(blurCanvas);
+                blurCanvas.restore();
+            }
+
+            if (listView != null && listView.getVisibility() == VISIBLE) {
+                blurCanvas.save();
+
+                blurCanvas.translate(listView.getLeft(), listView.getTop());
+                listView.draw(blurCanvas);
+                blurCanvas.restore();
+            }
+
             blurCanvas.save();
             blurCanvas.translate(0, listView.getY());
             sharedMediaLayout.drawListForBlur(blurCanvas, views);
@@ -5352,8 +5367,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         needLayout(false);
 
         profileActionBarView = new ProfileActionBarView(context, resourcesProvider);
-        avatarContainer2.addView(profileActionBarView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 72, Gravity.TOP | Gravity.FILL_HORIZONTAL, 12, 0, 12, 12));
+        contentView.addView(profileActionBarView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 72, Gravity.TOP | Gravity.FILL_HORIZONTAL, 12, 0, 12, 12));
         updateProfileActionBarViewColors();
+        contentView.blurBehindViews.add(profileActionBarView);
 
         listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -5376,6 +5392,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (fwdRestrictedHint != null) {
                     fwdRestrictedHint.hide();
+                }
+                if (contentView != null && contentView.needBlur) {
+                    contentView.invalidateBlur();
                 }
                 checkListViewScroll();
                 if (participantsMap != null && !usersEndReached && layoutManager.findLastVisibleItemPosition() > membersEndRow - 8) {
@@ -5740,6 +5759,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void setAvatarExpandProgress(float animatedFracture) {
+        if (contentView != null && contentView.needBlur) {
+            contentView.invalidateBlur();
+        }
         final int newTop = ActionBar.getCurrentActionBarHeight() + (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0);
         final float value = currentExpandAnimatorValue = AndroidUtilities.lerp(expandAnimatorValues, currentExpanAnimatorFracture = animatedFracture);
         checkPhotoDescriptionAlpha();
@@ -14769,31 +14791,23 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         private final ImageView imageView;
         private final TextView textView;
-        private final Theme.ResourcesProvider resourcesProvider;
 
-        private final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        private final Path clipPath = new Path();
+        public final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        public final Paint fallbackBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        private final boolean supportsBlur = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
-
-        private final Rect tmpRect = new Rect();
-        private final RectF rectF = new RectF();
-        private final int[] locationInWindow = new int[2];
-        private final int[] rootLocationInWindow = new int[2];
-
-        private float animationProgress = 0.0f;
+        public float animationProgress = 0.0f;
+        private StateListDrawable pressSelector;
 
         public ActionItemView(Context context, Theme.ResourcesProvider provider) {
             super(context);
-            this.resourcesProvider = provider;
 
-            setWillNotDraw(false);
             setOrientation(VERTICAL);
             setGravity(Gravity.CENTER);
-
-            setPadding(0, dp(6), 0, dp(6));
+            setPadding(0, AndroidUtilities.dp(6), 0, AndroidUtilities.dp(6));
             setClickable(true);
             setFocusable(true);
+
+            setWillNotDraw(false);
 
             imageView = new ImageView(context);
             imageView.setScaleType(ImageView.ScaleType.CENTER);
@@ -14808,71 +14822,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             textView.setEllipsize(TextUtils.TruncateAt.END);
             addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 6, 0, 0));
 
-            updateColors(Theme.getColor(Theme.key_avatar_backgroundActionBarBlue, resourcesProvider));
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            float currentTop = getMeasuredHeight() * this.animationProgress;
-            float cornerRadius = dp(12);
-
-            clipPath.rewind();
-            rectF.set(0, currentTop, getWidth(), getMeasuredHeight());
-            clipPath.addRoundRect(rectF, cornerRadius, cornerRadius, Path.Direction.CW);
-
-            canvas.save();
-            canvas.clipPath(clipPath);
-
-            if (supportsBlur) {
-                View rootView = this;
-                while (rootView.getParent() instanceof View) {
-                    if (rootView.getParent() instanceof NestedFrameLayout) {
-                        break;
-                    }
-                    rootView = (View) rootView.getParent();
-                }
-
-                getLocationInWindow(locationInWindow);
-                rootView.getLocationInWindow(rootLocationInWindow);
-
-                tmpRect.set(
-                        locationInWindow[0] - rootLocationInWindow[0],
-                        locationInWindow[1] - rootLocationInWindow[1],
-                        locationInWindow[0] - rootLocationInWindow[0] + getWidth(),
-                        locationInWindow[1] - rootLocationInWindow[1] + getHeight()
-                );
-
-                if (rootView.getParent() instanceof NestedFrameLayout) {
-                    ((NestedFrameLayout) rootView.getParent()).drawBlurRect(canvas, 0, tmpRect, backgroundPaint, false);
-                }
-            } else {
-                canvas.drawColor(backgroundPaint.getColor());
-            }
-
-            canvas.restore();
-
-            super.onDraw(canvas);
-        }
-
-        @Override
-        public void onDrawForeground(Canvas canvas) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (animationProgress > 0) {
-                    float currentTop = getMeasuredHeight() * this.animationProgress;
-                    float cornerRadius = dp(12);
-
-                    clipPath.rewind();
-                    rectF.set(0, currentTop, getWidth(), getMeasuredHeight());
-                    clipPath.addRoundRect(rectF, cornerRadius, cornerRadius, Path.Direction.CW);
-
-                    canvas.save();
-                    canvas.clipPath(clipPath);
-                    super.onDrawForeground(canvas);
-                    canvas.restore();
-                } else {
-                    super.onDrawForeground(canvas);
-                }
-            }
+            updateColors(Theme.getColor(Theme.key_avatar_backgroundActionBarBlue, provider));
         }
 
         public void setData(int iconRes, String text) {
@@ -14901,58 +14851,81 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             invalidate();
         }
 
+        @Override
+        protected void dispatchDraw(Canvas canvas) {
+            super.dispatchDraw(canvas);
+            if (pressSelector != null) {
+                float currentTop = getMeasuredHeight() * animationProgress;
+                pressSelector.setBounds(0, (int) currentTop, getWidth(), getHeight());
+                pressSelector.draw(canvas);
+            }
+        }
+
+        @Override
+        protected void drawableStateChanged() {
+            super.drawableStateChanged();
+            if (pressSelector != null) {
+                pressSelector.setState(getDrawableState());
+            }
+        }
+
+        @Override
+        protected boolean verifyDrawable(@NonNull Drawable who) {
+            return super.verifyDrawable(who) || (pressSelector != null && who == pressSelector);
+        }
+
+        @Override
+        public void jumpDrawablesToCurrentState() {
+            super.jumpDrawablesToCurrentState();
+            if (pressSelector != null) {
+                pressSelector.jumpToCurrentState();
+            }
+        }
+
         public void updateColors(int headerBackgroundColor) {
-            float lightenPercent = 0.1f;
-
             int iconAndTextColor = Color.WHITE;
-
             imageView.setColorFilter(new PorterDuffColorFilter(iconAndTextColor, PorterDuff.Mode.MULTIPLY));
             textView.setTextColor(iconAndTextColor);
 
+            float lightenPercent = 0.1f;
             float[] hsl = new float[3];
             ColorUtils.colorToHSL(headerBackgroundColor, hsl);
             hsl[2] = Math.min(1f, hsl[2] + lightenPercent);
             int lightenedColor = ColorUtils.HSLToColor(hsl);
 
-            if (supportsBlur) {
-                backgroundPaint.setColor(ColorUtils.setAlphaComponent(lightenedColor, 102));
-            } else {
-                backgroundPaint.setColor(ColorUtils.setAlphaComponent(lightenedColor, 200));
-            }
+            int tintColor = ColorUtils.setAlphaComponent(lightenedColor, 51);
+            backgroundPaint.setColor(tintColor);
 
-            invalidate();
+            int fallbackColor = ColorUtils.setAlphaComponent(lightenedColor, 255);
+            fallbackBackgroundPaint.setColor(fallbackColor);
 
             float cornerRadius = AndroidUtilities.dp(12);
             int pressedOverlayColor = 0x33000000;
 
-            StateListDrawable stateListDrawable = new StateListDrawable();
-
+            pressSelector = new StateListDrawable();
             GradientDrawable pressedShape = new GradientDrawable();
             pressedShape.setCornerRadius(cornerRadius);
             pressedShape.setColor(pressedOverlayColor);
-            stateListDrawable.addState(new int[]{android.R.attr.state_pressed}, pressedShape);
-            stateListDrawable.addState(new int[]{}, new ColorDrawable(Color.TRANSPARENT));
+            pressSelector.addState(new int[]{android.R.attr.state_pressed}, pressedShape);
+            pressSelector.addState(new int[]{}, new ColorDrawable(Color.TRANSPARENT));
+            pressSelector.setCallback(this);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                setForeground(stateListDrawable);
-            }
-        }
-
-        private int dp(float value) {
-            return AndroidUtilities.dp(value);
+            invalidate();
         }
     }
 
-    private class ProfileActionBarView extends FrameLayout {
+    private class ProfileActionBarView extends FrameLayout implements SizeNotifierFrameLayout.IViewWithInvalidateCallback {
         private final LinearLayout fourButtonLayout;
         private final ActionItemView[] actionButtons = new ActionItemView[4];
         private final ButtonWithCounterView openAppButton;
 
         private boolean buttonsDisabled = false;
+        private Runnable invalidateBlurCallback;
+        private final Rect tmpRect = new Rect();
 
         public ProfileActionBarView(@NonNull Context context, Theme.ResourcesProvider provider) {
             super(context);
-
+            setWillNotDraw(false);
             fourButtonLayout = new LinearLayout(context);
             fourButtonLayout.setOrientation(LinearLayout.HORIZONTAL);
             for (int i = 0; i < 4; i++) {
@@ -14963,6 +14936,58 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             openAppButton = new ButtonWithCounterView(context, provider);
             addView(openAppButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.CENTER_VERTICAL));
+        }
+
+        private NestedFrameLayout getContentView() {
+            if (getParent() instanceof NestedFrameLayout) {
+                return (NestedFrameLayout) getParent();
+            }
+            return null;
+        }
+
+        @Override
+        public void listenInvalidate(Runnable runnable) {
+            this.invalidateBlurCallback = runnable;
+        }
+
+        @Override
+        public void invalidate() {
+            super.invalidate();
+            if (invalidateBlurCallback != null) {
+                invalidateBlurCallback.run();
+            }
+        }
+
+        @Override
+        protected void dispatchDraw(Canvas canvas) {
+            NestedFrameLayout contentView = getContentView();
+            boolean useBlur = contentView != null && contentView.blurWasDrawn();
+
+            for (ActionItemView button : actionButtons) {
+                if (button.getVisibility() != VISIBLE) {
+                    continue;
+                }
+
+                float animationProgress = button.animationProgress;
+                float currentTop = button.getMeasuredHeight() * animationProgress;
+                float cornerRadius = AndroidUtilities.dp(12);
+                tmpRect.set(button.getLeft(), (int)(button.getTop() + currentTop), button.getRight(), button.getBottom());
+                canvas.save();
+                Path clipPath = new Path();
+                RectF rectF = new RectF(tmpRect);
+                clipPath.addRoundRect(rectF, cornerRadius, cornerRadius, Path.Direction.CW);
+                canvas.clipPath(clipPath);
+
+                if (useBlur) {
+                    float buttonAbsoluteY = this.getY() + button.getY() + currentTop;
+                    contentView.drawBlurRect(canvas, buttonAbsoluteY, tmpRect, button.backgroundPaint, true);
+                } else {
+                    canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, button.fallbackBackgroundPaint);
+                }
+
+                canvas.restore();
+            }
+            super.dispatchDraw(canvas);
         }
 
         public void setAnimationProgress(float progress) {
@@ -15001,6 +15026,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         private void showOpenAppLayout() {
             fourButtonLayout.setVisibility(View.GONE);
             openAppButton.setVisibility(View.VISIBLE);
+        }
+
+        public void updateColors(int headerColor) {
+            for (ActionItemView button : actionButtons) {
+                if (button != null) {
+                    button.updateColors(headerColor);
+                }
+            }
+            openAppButton.updateColors();
         }
 
         private void showMuteMenu(View anchorView) {
@@ -15287,15 +15321,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             actionButtons[1].setVisibility(View.VISIBLE);
             actionButtons[2].setVisibility(View.VISIBLE);
             actionButtons[3].setVisibility(View.VISIBLE);
-        }
-
-        public void updateColors(int headerColor) {
-            for (ActionItemView button : actionButtons) {
-                if (button != null) {
-                    button.updateColors(headerColor);
-                }
-            }
-            openAppButton.updateColors();
         }
     }
 }
