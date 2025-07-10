@@ -270,7 +270,6 @@ import org.telegram.ui.Gifts.GiftSheet;
 import org.telegram.ui.Stars.BotStarsActivity;
 import org.telegram.ui.Stars.BotStarsController;
 import org.telegram.ui.Stars.ProfileGiftsView;
-import org.telegram.ui.Stars.StarGiftPatterns;
 import org.telegram.ui.Stars.StarGiftSheet;
 import org.telegram.ui.Stars.StarsController;
 import org.telegram.ui.Stars.StarsIntroActivity;
@@ -991,7 +990,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             ImageReceiver imageReceiver = animatedEmojiDrawable != null ? animatedEmojiDrawable.getImageReceiver() : this.imageReceiver;
             canvas.save();
             canvas.scale(bounceScale, bounceScale, getMeasuredWidth() / 2f, getMeasuredHeight() / 2f);
-            float inset = hasStories ? (int) AndroidUtilities.dpf2(3.5f) : 0;
+            float inset = hasStories ? (int) AndroidUtilities.dpf2(0f) : 0;
             inset *= (1f - progressToExpand);
             inset *= progressToInsets * (1f - foregroundAlpha);
             float alpha = 1.0f;
@@ -1015,7 +1014,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (drawAvatar) {
                     float finalAlpha = imageReceiver.getAlpha() * alpha;
 
-                    clipRectF.set(inset, inset, getMeasuredWidth() - inset * 2f, getMeasuredHeight() - inset * 2f);
+                    clipRectF.set(inset, inset, getMeasuredWidth() - inset, getMeasuredHeight() - inset);
                     clipPath.rewind();
                     float cornerRadius = imageReceiver.getRoundRadius()[0];
                     clipPath.addRoundRect(clipRectF, cornerRadius, cornerRadius, Path.Direction.CW);
@@ -7357,6 +7356,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             final float textAnimationProgress = getProgressWithinThresholds(diff, 0.38f, 1f);
             final float dropletAnimationMorphProgress = getProgressWithinThresholds(diff, 0.14f, 0.85f);
             final float avatarBlurProgress = getProgressWithinThresholds(diff, 0.3f, 0.85f);
+            final float storyAppearProgress = getProgressWithinThresholds(diff, 0.83f, 0.95f);
 
             listView.setTopGlowOffset((int) extraHeight);
             listView.setOverScrollMode(extraHeight > AndroidUtilities.dp(HEADER_COLLAPSED_HEIGHT_DP) && extraHeight < listView.getMeasuredWidth() - newTop ? View.OVER_SCROLL_NEVER : View.OVER_SCROLL_ALWAYS);
@@ -7412,6 +7412,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
 
             if (storyView != null) {
+                storyView.setAppearProgress(storyAppearProgress);
                 storyView.setExpandCoords(avatarContainer2.getMeasuredWidth() - AndroidUtilities.dp(40), isRightHeaderAreaOccupied, (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0) + ActionBar.getCurrentActionBarHeight() + extraHeight + searchTransitionOffset);
             }
             if (giftsView != null) {

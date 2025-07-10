@@ -415,6 +415,14 @@ public class ProfileStoriesView extends View implements NotificationCenter.Notif
         }
     }
 
+    private float appearProgress;
+    public  void setAppearProgress(float progress) {
+        if (this.appearProgress != progress) {
+            this.appearProgress = progress;
+            invalidate();
+        }
+    }
+
     private float actionBarProgress;
     public void setActionBarActionMode(float progress) {
         if (Theme.isCurrentThemeDark()) {
@@ -487,10 +495,17 @@ public class ProfileStoriesView extends View implements NotificationCenter.Notif
     protected void dispatchDraw(Canvas canvas) {
         float rright = rightAnimated.set(this.right);
         float avatarPullProgress = Utilities.clamp((avatarContainer.getScaleX() - 1f) / 0.4f, 1f, 0f);
-        float insetMain = AndroidUtilities.lerp(AndroidUtilities.dpf2(4f), AndroidUtilities.dpf2(3.5f), avatarPullProgress);
+        float insetMain = AndroidUtilities.lerp(AndroidUtilities.dpf2(4f), AndroidUtilities.dpf2(0f), avatarPullProgress);
         insetMain *= progressToInsets;
-        float ax = avatarContainer.getX() + insetMain * avatarContainer.getScaleX();
-        float ay = avatarContainer.getY() + insetMain * avatarContainer.getScaleY();
+
+        float translationX = avatarContainer.getPivotX() * (1 - avatarContainer.getScaleX());
+        float translationY = avatarContainer.getPivotY() * (1 - avatarContainer.getScaleY());
+
+        float visualX = avatarContainer.getX() + translationX;
+        float visualY = avatarContainer.getY() + translationY;
+
+        float ax = visualX + insetMain * avatarContainer.getScaleX();
+        float ay = visualY + insetMain * avatarContainer.getScaleY();
         float aw = (avatarContainer.getWidth() - insetMain * 2) * avatarContainer.getScaleX();
         float ah = (avatarContainer.getHeight() - insetMain * 2) * avatarContainer.getScaleY();
         rect1.set(ax, ay, ax + aw, ay + ah);
@@ -583,7 +598,7 @@ public class ProfileStoriesView extends View implements NotificationCenter.Notif
             progressWasDrawn = false;
         }
         if (progressToUploading < 1f) {
-            segmentsAlpha = clamp(1f - expandProgress / 0.2f, 1, 0) * (1f - progressToUploading);
+            segmentsAlpha = clamp(1f - expandProgress / 0.2f, 1, 0) * (1f - progressToUploading) * appearProgress;
             final float segmentsCount = segmentsCountAnimated.set(count);
             final float segmentsUnreadCount = segmentsUnreadCountAnimated.set(unreadCount);
 
