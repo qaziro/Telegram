@@ -701,11 +701,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private ProfileActionBarView profileActionBarView;
     private static final float HEADER_COLLAPSED_HEIGHT_DP = 220f;
     private static final float AVATAR_COLLAPSED_SIZE_DP = 23f;
-    private static final float NAME_COLLAPSED_POSITION_X_DP = 50f;
+    private static final float NAME_COLLAPSED_POSITION_X_DP = 80f;
     private static final float NAME_COLLAPSED_POSITION_Y_DP = 25f;
     private static final float ONLINE_COLLAPSED_POSITION_Y_DP = 26f;
-    private static final float NAME_EXPANDED_MARGIN_BOTTOM_DP = 118f;
-    private static final float ONLINE_EXPANDED_MARGIN_BOTTOM_DP = 98f;
+    private static final float NAME_EXPANDED_MARGIN_BOTTOM_DP = 108f;
+    private static final float ONLINE_EXPANDED_MARGIN_BOTTOM_DP = 88f;
     private static final float AVATAR_MIDDLE_STATE_SIZE_DP = 104f;
     private static final float AVATAR_MAX_PULL_SIZE_DP =  1.5f * AVATAR_MIDDLE_STATE_SIZE_DP;
     private static final float EXPAND_TRIGGER_PROGRESS = 0.33f;
@@ -5168,6 +5168,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         avatarContainer2.addView(overlaysView);
         avatarImage.setAvatarsViewPager(avatarsViewPager);
 
+        profileActionBarView = new ProfileActionBarView(context, resourcesProvider);
+        contentView.addView(profileActionBarView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 72, Gravity.TOP | Gravity.FILL_HORIZONTAL, 12, 0, 12, 12));
+        updateProfileActionBarViewColors();
+        contentView.blurBehindViews.add(profileActionBarView);
+
         avatarsViewPagerIndicatorView = new PagerIndicatorView(context);
         avatarContainer2.addView(avatarsViewPagerIndicatorView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
@@ -5367,11 +5372,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
         }
         needLayout(false);
-
-        profileActionBarView = new ProfileActionBarView(context, resourcesProvider);
-        contentView.addView(profileActionBarView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 72, Gravity.TOP | Gravity.FILL_HORIZONTAL, 12, 0, 12, 12));
-        updateProfileActionBarViewColors();
-        contentView.blurBehindViews.add(profileActionBarView);
 
         listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -7379,7 +7379,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             if (profileActionBarView != null) {
                 float headerBottom = newTop + extraHeight + searchTransitionOffset;
-                float baseTranslationY = headerBottom - profileActionBarView.getMeasuredHeight() - AndroidUtilities.dp(12);
+                float baseTranslationY = headerBottom - profileActionBarView.getMeasuredHeight() - AndroidUtilities.dp(2);
 
                 float animationStartTop = newTop + AndroidUtilities.dp(0);
                 float animationEndTop = newTop - AndroidUtilities.dp(70);
@@ -14807,7 +14807,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             setOrientation(VERTICAL);
             setGravity(Gravity.CENTER);
-            setPadding(0, AndroidUtilities.dp(6), 0, AndroidUtilities.dp(6));
+            setPadding(0, AndroidUtilities.dp(3), 0, AndroidUtilities.dp(3));
             setClickable(true);
             setFocusable(true);
 
@@ -14824,7 +14824,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             textView.setLines(1);
             textView.setSingleLine(true);
             textView.setEllipsize(TextUtils.TruncateAt.END);
-            addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 6, 0, 0));
+            addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 3, 0, 0));
 
             updateColors(Theme.getColor(Theme.key_avatar_backgroundActionBarBlue, provider));
         }
@@ -14839,18 +14839,18 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             this.animationProgress = progress;
 
             float scale = 1.0f - progress;
-            imageView.setScaleX(scale);
-            imageView.setScaleY(scale);
-            textView.setScaleX(scale);
-            textView.setScaleY(scale);
+            setScaleX(scale);
+            setScaleY(scale);
 
             float alpha = 1.0f - Math.min(1.0f, progress * 1.5f);
-            imageView.setAlpha(alpha);
-            textView.setAlpha(alpha);
+            setAlpha(alpha);
 
             float downwardTranslation = getMeasuredHeight() * progress;
-            imageView.setTranslationY(downwardTranslation * 0.65f);
-            textView.setTranslationY(downwardTranslation / 4.0f);
+            float baseTranslation = downwardTranslation / 4.0f;
+            setTranslationY(baseTranslation);
+
+            imageView.setTranslationY(downwardTranslation * 0.65f - baseTranslation);
+            textView.setTranslationY(downwardTranslation * 0.55f - baseTranslation);
 
             invalidate();
         }
@@ -14934,9 +14934,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             fourButtonLayout.setOrientation(LinearLayout.HORIZONTAL);
             for (int i = 0; i < 4; i++) {
                 actionButtons[i] = new ActionItemView(context, provider);
-                fourButtonLayout.addView(actionButtons[i], LayoutHelper.createLinear(0, LayoutHelper.MATCH_PARENT, 1.0f, i == 0 ? 0 : dp(2), 0, 0, 0));
+                fourButtonLayout.addView(actionButtons[i], LayoutHelper.createLinear(0, LayoutHelper.MATCH_PARENT, 1.0f, i == 0 ? 0 : dp(3), 0, 0, 0));
             }
-            addView(fourButtonLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 68, Gravity.TOP));
+            addView(fourButtonLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 60, Gravity.TOP));
 
             openAppButton = new ButtonWithCounterView(context, provider);
             addView(openAppButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.CENTER_VERTICAL));
