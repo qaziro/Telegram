@@ -14801,6 +14801,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         public float animationProgress = 0.0f;
         private StateListDrawable pressSelector;
+        private final Path clipPath = new Path();
 
         public ActionItemView(Context context, Theme.ResourcesProvider provider) {
             super(context);
@@ -14839,18 +14840,19 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             this.animationProgress = progress;
 
             float scale = 1.0f - progress;
-            setScaleX(scale);
-            setScaleY(scale);
+            imageView.setScaleX(scale);
+            imageView.setScaleY(scale);
+            textView.setScaleX(scale);
+            textView.setScaleY(scale);
 
             float alpha = 1.0f - Math.min(1.0f, progress * 1.5f);
             setAlpha(alpha);
 
             float downwardTranslation = getMeasuredHeight() * progress;
             float baseTranslation = downwardTranslation / 4.0f;
-            setTranslationY(baseTranslation);
 
-            imageView.setTranslationY(downwardTranslation * 0.65f - baseTranslation);
-            textView.setTranslationY(downwardTranslation * 0.55f - baseTranslation);
+            imageView.setTranslationY(downwardTranslation * 0.88f - baseTranslation);
+            textView.setTranslationY(downwardTranslation * 0.48f - baseTranslation);
 
             invalidate();
         }
@@ -14859,9 +14861,18 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         protected void dispatchDraw(Canvas canvas) {
             super.dispatchDraw(canvas);
             if (pressSelector != null) {
-                float currentTop = getMeasuredHeight() * animationProgress;
-                pressSelector.setBounds(0, (int) currentTop, getWidth(), getHeight());
+
+                float clipTopAmount = getMeasuredHeight() * animationProgress;
+                float cornerRadius = AndroidUtilities.dp(12);
+                canvas.save();
+                clipPath.rewind();
+                RectF clipRect = new RectF(0, clipTopAmount, getWidth(), getHeight());
+                clipPath.addRoundRect(clipRect, cornerRadius, cornerRadius, Path.Direction.CW);
+                canvas.clipPath(clipPath);
+
+                pressSelector.setBounds(0, 0, getWidth(), getHeight());
                 pressSelector.draw(canvas);
+                canvas.restore();
             }
         }
 
@@ -14903,14 +14914,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             int fallbackColor = ColorUtils.setAlphaComponent(lightenedColor, 255);
             fallbackBackgroundPaint.setColor(fallbackColor);
 
-            float cornerRadius = AndroidUtilities.dp(12);
             int pressedOverlayColor = 0x33000000;
 
             pressSelector = new StateListDrawable();
-            GradientDrawable pressedShape = new GradientDrawable();
-            pressedShape.setCornerRadius(cornerRadius);
-            pressedShape.setColor(pressedOverlayColor);
-            pressSelector.addState(new int[]{android.R.attr.state_pressed}, pressedShape);
+            pressSelector.addState(new int[]{android.R.attr.state_pressed}, new ColorDrawable(pressedOverlayColor));
             pressSelector.addState(new int[]{}, new ColorDrawable(Color.TRANSPARENT));
             pressSelector.setCallback(this);
 
