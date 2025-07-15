@@ -7652,6 +7652,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     giftsView.invalidate();
                 }
                 float nameScale = AndroidUtilities.lerp(1.0f, NAME_MIDDLE_SCALE, textAnimationProgress);
+                nameTextView[1].setPivotY(0);
                 if (expandAnimator == null || !expandAnimator.isRunning()) {
                     avatarContainer.setScaleX(avatarScale);
                     avatarContainer.setScaleY(avatarScale);
