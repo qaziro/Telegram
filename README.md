@@ -1,39 +1,36 @@
-## Telegram messenger for Android
+# Android Contest 2025: Round 1 Submission
+## Project: Profile Screen Modernization
 
-[Telegram](https://telegram.org) is a messaging app with a focus on speed and security. It’s superfast, simple and free.
-This repo contains the official source code for [Telegram App for Android](https://play.google.com/store/apps/details?id=org.telegram.messenger).
+### Overview
 
-## Creating your Telegram Application
+This submission presents a comprehensive overhaul of the user profile screen, based on provided design mockups. The focus is on implementing dynamic, scroll-driven animations and modernizing the UI through component refactoring and simplification.
 
-We welcome all developers to use our API and source code to create applications on our platform.
-There are several things we require from **all developers** for the moment.
+### Demo Videos
 
-1. [**Obtain your own api_id**](https://core.telegram.org/api/obtaining_api_id) for your application.
-2. Please **do not** use the name Telegram for your app — or make sure your users understand that it is unofficial.
-3. Kindly **do not** use our standard logo (white paper plane in a blue circle) as your app's logo.
-3. Please study our [**security guidelines**](https://core.telegram.org/mtproto/security_guidelines) and take good care of your users' data and privacy.
-4. Please remember to publish **your** code too in order to comply with the licences.
+| Demo 1 | Demo 2 |
+|:-------------------------------:|:-------------------------------:|
+| [![Demo 1](https://img.youtube.com/vi/B4vWxe-wZLg/maxresdefault.jpg)](https://www.youtube.com/watch?v=B4vWxe-wZLg) | [![Demo 2](https://img.youtube.com/vi/b4tACDOuDok/maxresdefault.jpg)](https://www.youtube.com/watch?v=b4tACDOuDok) |
 
-### API, Protocol documentation
+### Key Enhancements
 
-Telegram API manuals: https://core.telegram.org/api
+#### Visual & Animation Enhancements
+*   **Scroll-Driven Header Animation:** A fluid droplet morphing effect has been implemented in the profile header, which animates in response to scroll gestures.
+*   **Component Animations:** New animations have been integrated for the user avatar, gift icons, and background patterns to create a more dynamic interface.
+*   **Dynamic Action Bar Blur:** The action bar now features a background blur effect. This was achieved by integrating the `ProfileActionBarView` with the `SizeNotifierFrameLayout` to leverage its performant, built-in blur implementation.
 
-MTproto protocol manuals: https://core.telegram.org/mtproto
+#### UI & Codebase Refinements
+*   **Modernized Action Bar:** A new action bar with filled icons for primary user actions has replaced the previous floating action button, centralizing controls.
+*   **Interface Simplification:** The user interface has been streamlined by removing the 'Notifications' row and disabling the secondary voice and video call buttons to enhance focus on core content.
+*   **Code Quality Improvements:** The codebase was refactored by extracting magic numbers into named constants (`ProfileActivity`) and preparing new UI components for localization with English string resources.
 
-### Compilation Guide
+### Detailed Commit Log
 
-**Note**: In order to support [reproducible builds](https://core.telegram.org/reproducible-builds), this repo contains dummy release.keystore,  google-services.json and filled variables inside BuildVars.java. Before publishing your own APKs please make sure to replace all these files with your own.
-
-You will require Android Studio 3.4, Android NDK rev. 20 and Android SDK 8.1
-
-1. Download the Telegram source code from https://github.com/DrKLO/Telegram ( git clone https://github.com/DrKLO/Telegram.git )
-2. Copy your release.keystore into TMessagesProj/config
-3. Fill out RELEASE_KEY_PASSWORD, RELEASE_KEY_ALIAS, RELEASE_STORE_PASSWORD in gradle.properties to access your  release.keystore
-4.  Go to https://console.firebase.google.com/, create two android apps with application IDs org.telegram.messenger and org.telegram.messenger.beta, turn on firebase messaging and download google-services.json, which should be copied to the same folder as TMessagesProj.
-5. Open the project in the Studio (note that it should be opened, NOT imported).
-6. Fill out values in TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java – there’s a link for each of the variables showing where and which data to obtain.
-7. You are ready to compile Telegram.
-
-### Localization
-
-We moved all translations to https://translations.telegram.org/en/android/. Please use it.
+*   `feat(Profile)`: Implement new animations for avatar, gifts, and background patterns
+*   `feat(Profile)`: Add scroll-driven droplet morph animation to header
+*   `feat(Profile)`: Add new action buttons with corresponding filled icons
+*   `refactor(ui)`: Hook ProfileActionBarView into SizeNotifierFrameLayout for blur
+*   `refactor(Profile)`: Simplify UI by removing write button
+*   `refactor(Profile)`: Simplify UI by disabling notification row
+*   `refactor(Profile)`: Simplify UI by disabling action buttons
+*   `refactor(ProfileActivity)`: Extract magic numbers for layout
+*   `feat(profile)`: Localize action bar buttons with English strings
