@@ -7353,7 +7353,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         if (avatarContainer != null) {
             final float diff = Math.min(1f, extraHeight / AndroidUtilities.dp(HEADER_COLLAPSED_HEIGHT_DP));
-            final float textAnimationProgress = getProgressWithinThresholds(diff, 0.38f, 1f);
+            final float textAnimationProgress = getProgressWithinThresholds(diff, 0.33f, 1f);
             final float dropletAnimationMorphProgress = getProgressWithinThresholds(diff, 0.14f, 0.85f);
             final float avatarBlurProgress = getProgressWithinThresholds(diff, 0.3f, 0.85f);
             final float storyAppearProgress = getProgressWithinThresholds(diff, 0.83f, 0.95f);
